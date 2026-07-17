@@ -1,0 +1,17 @@
+# Video extensions to scan - one per line, no dots.
+# Lines starting with # are ignored.
+mp4
+mov
+m2ts
+mts
+avi
+mkv
+mxf
+wmv
+flv
+webm
+m4v
+mpg
+mpeg
+3gp
+ts

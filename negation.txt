@@ -1,0 +1,4 @@
+# Paths to SKIP - one per line. Anything under these is ignored.
+# Example:
+# D:\Backups
+# E:\Proxies

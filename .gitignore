@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+sorted/
+results.txt
+results.csv
+report.csv
+# never upload private reference photos, keep the placeholder note
+search_pics/*
+!search_pics/_PUT_PHOTOS_HERE.txt

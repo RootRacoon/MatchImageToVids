@@ -1,0 +1,5 @@
+# Paths to SEARCH - one per line (files or folders).
+# Leave empty (only comments) to search ALL drives.
+# Example:
+# D:\Footage
+# E:\Cards\Day1

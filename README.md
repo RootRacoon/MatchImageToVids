@@ -16,7 +16,9 @@ YourFolder\
 ├── run.bat                  <- double-click this
 ├── sort_videos_by_face.py
 ├── search_pics\             <- put your reference photos here
-├── videos\                  <- put the videos to scan here
+├── extensions.txt           <- which video types to scan (auto-created)
+├── negation.txt             <- paths to SKIP (auto-created)
+├── target.txt               <- paths to SEARCH; empty = all drives (auto-created)
 ├── results.txt              <- readable output (created after a run)
 ├── results.csv              <- same data as a spreadsheet
 └── sorted\                  <- matched videos copied into per-person folders
@@ -26,18 +28,30 @@ YourFolder\
 
 ## Quick start (one-click)
 
-1. Put **reference photos** in `search_pics\`. Name each file after the person:
-   - `Bride.jpg`, `Groom.jpg`
-   - Multiple photos of the same person: `Bride_1.jpg`, `Bride_2.jpg` (auto-grouped)
-   - Use clear, front-facing photos with just that one person's face.
-2. Put the **videos** to scan in `videos\`.
-3. **Double-click `run.bat`.**
+1. Put **reference photos** in `search_pics\`. The filename is the person's name
+   (`Bride.jpg`, `Groom.jpg`). Group photos are fine — every face in them is used.
+2. **Double-click `run.bat`** and answer the questions:
+   - **Date filter** — single day, a date range (`YYYY-MM-DD-HH`), or none.
+   - **Footage type** — Normal, or Sparse/short (more lenient) for short clips.
+   - **Copy matches?** — yes/no.
+3. Done — `results.txt` opens automatically.
+
+Where it looks for videos:
+- If `target.txt` has paths → it scans those (files or folders).
+- If `target.txt` is empty → it searches **all drives** (via Everything if installed).
 
 On the **first run only** it creates a Python environment, installs dependencies,
-and downloads the face model (~300 MB, needs internet once). Every run after is fast
-and works offline.
+and downloads the face model (~300 MB, needs internet once). Every run after is fast.
 
-When it finishes, `results.txt` opens automatically.
+### The three config files (plain text, edit any time)
+
+| File | What goes in it |
+|------|-----------------|
+| `extensions.txt` | Video extensions to scan, one per line (no dots) |
+| `negation.txt`   | Paths to **skip**, one per line (backups, proxies, …) |
+| `target.txt`     | Paths to **search**, one per line — leave empty for all drives |
+
+They're created automatically with examples the first time you run.
 
 ---
 
@@ -61,42 +75,23 @@ When it finishes, `results.txt` opens automatically.
 
 ---
 
-## Configuration (edit `run.bat`)
+## Configuration (the three text files)
 
-Near the top of `run.bat`:
+Instead of editing the script, tune these plain-text files (auto-created on first run):
 
-```bat
-REM Video extensions to scan (comma-separated, no dots).
-set "EXTS=mp4,mov,m2ts,mts,avi,mkv,mxf,wmv,flv,webm,m4v,mpg,mpeg,3gp,ts"
+- **`extensions.txt`** — one extension per line, no dots.
+- **`negation.txt`** — one path per line to skip. Anything under it is ignored.
+- **`target.txt`** — one path per line to search (files or folders). Leave it empty
+  (comments only) to search **all drives**.
 
-REM (1) DATE RANGE via Everything - fastest, searches all drives by date.
-set "DATE_FROM="
-set "DATE_TO="
-set "DATE_FIELD=modified"      REM modified = recording date, created = copy date
-set "ES_PATH="                 REM full path to es.exe if it's not on PATH
+Lines starting with `#` are ignored, so you can keep notes/examples in them.
 
-REM (2) If no dates: 1 = search ALL drives, 0 = only the "videos" folder.
-set "SEARCH_ALL=0"
-
-REM Paths to SKIP (semicolon-separated).
-set "EXCLUDE="
-```
-
-- **EXTS** — add/remove extensions (comma-separated, no dots).
-- **DATE_FROM / DATE_TO** — fill **both** (e.g. `2025-01-01`) to have Everything
-  find all videos in that range across every drive automatically. Needs Everything
-  + `es.exe` installed. Leave blank to skip.
-- **DATE_FIELD** — `modified` (the recording date) or `created` (when copied).
-- **SEARCH_ALL** — used only if no dates: `1` = sweep all drives, `0` = `videos\` folder.
-- **EXCLUDE** — semicolon-separated paths to skip (e.g. `D:\Backups;E:\Proxies`).
-  Any file or folder under these is ignored, in every input mode.
-
-### Recommended workflow (fully automatic)
+### Fastest workflow (all drives by date)
 
 Install [Everything](https://www.voidtools.com/) + its `es` command-line tool, put
-your photos in `search_pics\`, set `DATE_FROM`/`DATE_TO` in `run.bat`, and
-double-click. No paths, no copying videos — it finds them by date across all drives
-and sorts them. This is the fastest end-to-end option.
+your photos in `search_pics\`, leave `target.txt` empty, double-click `run.bat`, and
+choose a date range. It finds matching videos across every drive instantly and sorts
+them. No paths to type, no copying footage around.
 
 ---
 
@@ -151,10 +146,12 @@ py sort_videos_by_face.py --videos "videos" --gpu --copy
 
 ### All options
 
-Pick one input source: `--from/--to`, `--videos`, `--files`, or `--all`.
+`--wizard` is the interactive mode `run.bat` uses (reads the 3 text files, asks the
+questions). Otherwise pick one input source: `--from/--to`, `--videos`, `--files`, or `--all`.
 
 | Option          | Default        | What it does |
 |-----------------|----------------|--------------|
+| `--wizard`      | —              | Interactive: read config files + ask date/footage questions |
 | `--from`/`--to` | —              | Date range; uses Everything to find videos on all drives |
 | `--date-field`  | `modified`     | `modified` (recording date) or `created` (copy date) |
 | `--es-path`     | —              | Path to `es.exe` if not on PATH |
